@@ -5,14 +5,6 @@
 #include "kruskal.h"
 
 #include <chrono>
-#include <climits>
-#include <iostream>
-#include <ostream>
-#include <tuple>
-#include <tuple>
-#include <tuple>
-#include <tuple>
-#include <tuple>
 #include <tuple>
 
 #include "../model/dsu.h"

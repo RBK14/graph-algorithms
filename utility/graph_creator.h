@@ -4,10 +4,10 @@
 
 #ifndef FILE_READER_H
 #define FILE_READER_H
+
 #include <string>
 
 #include "../model/graph.h"
-
 
 class GraphCreator {
 public:

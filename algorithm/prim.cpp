@@ -7,13 +7,9 @@
 #include <chrono>
 #include <iostream>
 #include <tuple>
-
 #include <random>
 #include <ratio>
-#include <tuple>
-#include <tuple>
-#include <tuple>
-#include <tuple>
+#include <bits/ranges_algo.h>
 
 #include "../model/min_heap.h"
 

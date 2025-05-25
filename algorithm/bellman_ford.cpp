@@ -14,11 +14,11 @@ std::tuple<int*, Node**, double> BellmanFord::bellmanFordIncidenceMatrix(int** i
     auto* distance = new int[V];
     auto* parent = new int[V];
 
+    // Inicjalizacja wierzchołka startowego
     for (int v = 0; v < V; v++) {
         distance[v] = INT_MAX;
         parent[v] = -1;
     }
-
     distance[s] = 0;
 
     // Przejście przez krawędzie V-1 razy i sprawdzenie cykli ujemnych przy V-tej iteracji
