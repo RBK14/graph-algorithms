@@ -20,4 +20,8 @@ add_executable(aizo_proj_2 main.cpp
         algorithm/dijkstra.h
         algorithm/bellman_ford.cpp
         algorithm/bellman_ford.h
+        utility/result_parser.cpp
+        utility/result_parser.h
+        utility/config_parser.cpp
+        utility/config_parser.h
 )
