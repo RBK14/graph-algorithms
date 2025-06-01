@@ -36,7 +36,7 @@ Graph* GraphCreator::generateGraph(const int V, const double density, const bool
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<int> vertexDistribution(0, V - 1);
-    std::uniform_int_distribution<int> weightDistribution(1, 99);
+    std::uniform_int_distribution<int> weightDistribution(1, 99999);
 
     const int maxEdges = directed ? V * (V - 1) : V * (V - 1) / 2;
     // Sprawdzenie, czy dla podanej gęstości możemy zbudować graf spójny

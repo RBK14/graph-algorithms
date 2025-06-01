@@ -13,13 +13,10 @@ void ResultParser::printMST(const Edge* mstEdges, const int V) {
     for (int v = 0; v < V - 1; v++) {
         std::cout << mstEdges[v].u << " --- " << mstEdges[v].v << "; " << mstEdges[v].w << std::endl;
     }
-    std::cout << std::endl;
 }
 
 void ResultParser::printPath(const int* distance, Node** path, const int V) {
     for (int v = 0; v < V; ++v) {
-        std::cout << "path: ";
-
         const Node* current = path[v];
         while (current) {
             std::cout << current->v;
@@ -56,7 +53,7 @@ void ResultParser::saveScoresToFile(const std::string &filename) {
         return;
     }
 
-    file << "V;density;kruskal;prim;dijkstra;bellman_ford\n";
+    file << "V;density;prim;kruskal;dijkstra;bellman-ford\n";
 
     for (const auto& [V, densityMap] : averageScores) {
         for (const auto& [density, algorithmScores] : densityMap) {

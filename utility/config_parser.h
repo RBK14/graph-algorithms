@@ -15,14 +15,15 @@ enum class Representation {
 };
 
 struct Config {
-    bool simulation;                        // Czy aplikacja ma być uruchomiona w trybie symulacji
+    bool isModeSimulation;                  // Czy aplikacja ma być uruchomiona w trybie symulacji
     Representation representation;          // Reprezentacja grafy
     std::vector<Algorithm> algorithms;      // Algorytmy, które mają być uruchomione
     std::vector<int> vertices;              // Liczba wierzchołków w grafie
     std::vector<double> densities;          // Gęstość generowanego grafu
-    bool read;                              // Czy graf ma być wczytany z pliku
+    bool isReadFromFile;                    // Czy graf ma być wczytany z pliku
     std::string testDataPath;               // Ścieżka do pliku, z którego ma być wczytany graf
-    bool print;                             // Czy graf ma być wypisywany po wczytaniu i po działaniu algorytmu
+    bool isGraphPrinting;                   // Czy graf ma być wypisywany po wczytaniu i po działaniu algorytmu
+    int startVertex;                        // Wierzchołek startowy dla algorytmów SP
 };
 
 class ConfigParser {

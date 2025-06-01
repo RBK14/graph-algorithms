@@ -15,14 +15,15 @@ Config ConfigParser::readConfig(const std::string &configPath) {
     Config config;
 
     // Ustawienia domyślne
-    config.simulation = false;
+    config.isModeSimulation = false;
     config.representation = Representation::LIST;
-    config.algorithms.push_back(Algorithm::PRIM);
+    config.algorithms.push_back(Algorithm::BELLMAN_FORD);
     config.vertices = {80, 120, 160, 180, 220, 240, 280};
     config.densities = {0.25, 0.50, 0.99};
-    config.read = false;
-    config.testDataPath = nullptr;
-    config.print = false;
+    config.isReadFromFile = false;
+    config.testDataPath = "";
+    config.isGraphPrinting = false;
+    config.startVertex = 0;
 
     std::ifstream file(configPath);
 
@@ -49,13 +50,13 @@ Config ConfigParser::readConfig(const std::string &configPath) {
             value.erase(std::ranges::remove_if(value, ::isspace).begin(), value.end());
 
             if (key == "mode") {
-                if (value == "simulation") config.simulation = true;
-                else if (value == "test") config.simulation = false;
+                if (value == "simulation") config.isModeSimulation = true;
+                else if (value == "test") config.isModeSimulation = false;
                 else {
                     std::cerr << "[ERROR] Invalid value for mode: " << value << std::endl;
                     std::cout << "[INFO] Restoring default values..." << std::endl;
                 }
-            } else if (key == "representation") {
+            } else if (key == "simulation_representation") {
                 if (value == "matrix") config.representation = Representation::MATRIX;
                 else if (value == "list") config.representation = Representation::LIST;
                 else {
@@ -79,7 +80,7 @@ Config ConfigParser::readConfig(const std::string &configPath) {
             } else if (key == "vertices") {
                 std::istringstream sizeStream(value);
                 std::string size;
-                config.densities.clear();
+                config.vertices.clear();
                 bool validSizes = true;
                 while (std::getline(sizeStream, size, ',')) {
                     try {
@@ -113,8 +114,8 @@ Config ConfigParser::readConfig(const std::string &configPath) {
                     config.densities = {0.25, 0.50, 0.99}; // Przywrócenie wartości domyślnych
                 }
             } else if (key == "test_mode") {
-                if (value == "read") config.read = true;
-                else if (value == "generate") config.read = false;
+                if (value == "read") config.isReadFromFile = true;
+                else if (value == "generate") config.isReadFromFile = false;
                 else {
                     std::cerr << "[ERROR] Invalid value for test_mode: " << value << std::endl;
                     std::cout << "[INFO] Restoring default values..." << std::endl;
@@ -122,11 +123,25 @@ Config ConfigParser::readConfig(const std::string &configPath) {
             } else if (key == "test_data_path") {
                 config.testDataPath = value;
             } else if (key == "test_print_graph") {
-                if (value == "true") config.print = true;
-                else if (value == "false") config.print = false;
+                if (value == "true") config.isGraphPrinting = true;
+                else if (value == "false") config.isGraphPrinting = false;
                 else {
                     std::cerr << "[ERROR] Invalid value for test_print_graph: " << value << std::endl;
                     std::cout << "[INFO] Restoring default values..." << std::endl;
+                }
+            } else if (key == "test_sp_start_vertex") {
+                try {
+                    int startVertex = std::stoi(value);
+                    int minVertex = *std::ranges::min_element(config.vertices);
+                    if (startVertex >= 0 && startVertex < minVertex) {
+                        config.startVertex = startVertex;
+                    } else {
+                        std::cerr << "[ERROR] Value for test_sp_start_vertex out of valid range [0, " << minVertex << ")" << std::endl;
+                        std::cout << "[INFO] Restoring default value for startVertex..." << std::endl;
+                    }
+                } catch (std::exception&) {
+                    std::cerr << "[ERROR] Invalid value for test_sp_start_vertex: " << value << std::endl;
+                    std::cout << "[INFO] Restoring default value for startVertex..." << std::endl;
                 }
             }
         }
@@ -135,10 +150,11 @@ Config ConfigParser::readConfig(const std::string &configPath) {
 }
 
 void ConfigParser::printConfig(const Config &config) {
-    std::cout << "\n---------Application Configuration---------\n";
+    std::cout << "\n---------APPLICATION PROPERTIES---------\n";
 
-    std::cout << "simulation_mode = " << (config.simulation ? "simulation" : "test") << std::endl;
-    std::cout << "representation = " << toString(config.representation) << std::endl;
+    std::cout << "mode = " << (config.isModeSimulation ? "simulation" : "test") << std::endl;
+    if (config.isModeSimulation)
+        std::cout << "simulation_representation = " << toString(config.representation) << std::endl;
 
     std::cout << "algorithms = ";
     for (const auto& alg : config.algorithms) {
@@ -146,29 +162,34 @@ void ConfigParser::printConfig(const Config &config) {
     }
     std::cout << std::endl;
 
-    std::cout << "vertices = ";
-    for (const int v : config.vertices) {
-        std::cout << v << " ";
-    }
-    std::cout << std::endl;
+    if (!config.isReadFromFile) {
+        std::cout << "vertices = ";
+        for (const int v : config.vertices) {
+            std::cout << v << " ";
+        }
+        std::cout << std::endl;
 
-    std::cout << "densities = ";
-    for (const double d : config.densities) {
-        std::cout << d << " ";
+        std::cout << "densities = ";
+        for (const double d : config.densities) {
+            std::cout << d << " ";
+        }
+        std::cout << std::endl;
     }
-    std::cout << std::endl;
 
-    std::cout << "read_mode = " << (config.read ? "read" : "generate") << std::endl;
-    std::cout << "test_data_path = " << config.testDataPath << std::endl;
-    std::cout << "test_print_graph = " << (config.print ? "true" : "false") << std::endl;
+    if (!config.isModeSimulation) {
+        std::cout << "test_mode = " << (config.isReadFromFile ? "read" : "generate") << std::endl;
+        std::cout << "test_data_path = " << config.testDataPath << std::endl;
+        std::cout << "test_print_graph = " << (config.isGraphPrinting ? "true" : "false") << std::endl;
+        std::cout << "test_sp_start_vertex = " << config.startVertex << std::endl;
+    }
 
     std::cout << "--------------------------------------------\n\n";
 }
 
 std::string ConfigParser::toString(const Representation repr) {
     switch (repr) {
-        case Representation::LIST: return "Adjacency List";
-        case Representation::MATRIX: return "Incidence Matrix";
+        case Representation::LIST: return "list";
+        case Representation::MATRIX: return "matrix";
         default: return "unknown";
     }
 }
